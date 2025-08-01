@@ -1,10 +1,10 @@
 # Traffic Prediction with Graph Convolutional Networks
 
-A professionally curated comparison of **STGCN (2018)**, **STDF (2020)**, and **AST-GCN (2021)** for spatiotemporal traffic forecasting, plus PyTorch scaffolds and publication-ready figures.
+A professionally curated comparison of **STGCN (2018)**, **STDF (2020)**, **AST-GCN (2021)** and **AST-GCN (2021)** for spatiotemporal traffic forecasting, plus PyTorch scaffolds and publication-ready figures.
 
-- 📄 Blog: [`docs/posts/gcn-comparison.md`](docs/posts/gcn-comparison.md)
-- 🖼 Figures: in `docs/assets/`
-- 🧪 Code: in `src/`
+- Blog: [`docs/posts/gcn-comparison.md`](docs/posts/gcn-comparison.md)
+- Figures: in `docs/assets/`
+- Code: in `src/`
 
 ## Quickstart
 

@@ -26,7 +26,8 @@ traffic-prediction-gcn/
 │       ├── stgcn.svg
 │       ├── stdf.svg
 │       └── astgcn.svg
-├── src/
+├──papers/
+├──src/
 │   ├── datasets/
 │   │   └── loaders.py
 │   ├── models/
@@ -42,3 +43,4 @@ traffic-prediction-gcn/
 - STGCN: *Spatio-Temporal Graph Convolutional Networks: A Deep Learning Framework for Traffic Forecasting* (AAAI 2018).
 - STDF: *Spatiotemporal Data Fusion in Graph Convolutional Networks for Traffic Prediction* (IEEE Access 2020).
 - AST-GCN: *Attribute-Augmented Spatiotemporal Graph Convolutional Network for Traffic Forecasting* (IEEE Access 2021).
+- ABS-GCN：*Attention Based Spatial-Temporal Graph Convolutional Networks for Traffic Flow Forecasting*(AAAI 2019)

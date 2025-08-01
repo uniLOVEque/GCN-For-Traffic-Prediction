@@ -1,0 +1,8 @@
+title: GCN Traffic Prediction Blog
+description: A technical blog on GCN-based traffic forecasting
+theme: GCN-For-Traffic-Prediction
+plugins:
+  - jekyll-include-cache
+
+include:
+  - _includes/head-custom.html

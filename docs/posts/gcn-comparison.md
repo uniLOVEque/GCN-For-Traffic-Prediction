@@ -11,18 +11,16 @@
 
 ### 问题抽象
 
-* **路网建模：** 交通网络被建模为图 \\( G = (V, E, A) \\)，其中 \\( V \\) 表示包含 \\( N \\) 个传感器节点的集合，\\( A \in \mathbb{R}^{N \times N} \\) 为邻接矩阵，刻画节点之间的空间连接关系。
-* **输入张量：** 历史观测数据构成张量 \\( X \in \mathbb{R}^{B \times T\_{in} \times N \times C} \\)，其中 \\( B \\) 为批大小，\\( T\_{in} \\) 为时间步数，\\( C \\) 为特征数（如速度、流量等）。
-* **预测目标：** 输出为未来 \\( T\_{out} \\) 个时间步的交通状态 \\( \hat{Y} \in \mathbb{R}^{B \times T\_{out} \times N \times C'} \\)。
+## 1. 问题定义与符号
 
-### 核心模块：图卷积
+- 路网以图 $G=(V, E, A)$ 表示，$|V|=N$ 为节点数，$A \in \mathbb{R}^{N \times N}$ 为加权邻接矩阵（可包含自环）。
+- 历史观测构成张量 $X \in \mathbb{R}^{B \times C \times N \times T}$：批大小 $B$，通道数 $C$（如速度/流量），节点数 $N$，时间窗口长度 $T$。
+- 目标是在给定 $X$ 与可选外部因子 $Z$ 的情况下预测未来 $H$ 个时间步：$\hat{Y} \in \mathbb{R}^{B \times C' \times N \times H}$。
 
-主流模型多采用谱图卷积的一阶近似，其传播公式为：
-
-$$
-H^{(l+1)} = \sigma\left(\hat{D}^{-1/2} \hat{A} \hat{D}^{-1/2} H^{(l)} W^{(l)}\right)
-$$
-
+### 图卷积（谱域近似）
+谱域图卷积可由切比雪夫多项式近似：
+```math
+\Theta *_{\mathcal{G}} X \approx \sum_{k=0}^{K-1}\theta_k T_k(\tilde{L}) X, \quad \tilde{L}=\frac{2}{\lambda_{\max}}L-I.
 其中 \\( \hat{A} = A + I \\) 为添加自环后的邻接矩阵，\\( \hat{D} \\) 为其度矩阵，\\( W^{(l)} \\) 是第 \\( l \\) 层的可学习权重。
 
 ---

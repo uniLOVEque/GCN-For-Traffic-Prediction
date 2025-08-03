@@ -1,11 +1,9 @@
-
-
 ---
 
 # GCN交通预测
 
 > **导读：**
-> 交通预测是智慧城市大脑建设的核心环节。近年来，图卷积网络（GCN）因其出色的时空建模能力，成为解决该问题的重要工具。本文系统分析四篇具有代表性的论文，从经典的 STGCN，到引入注意力机制的 ASTGCN，再到融合属性信息的 AST-GCN，以及提出通用融合框架的 STDF，全面梳理 GCN 在交通预测中的技术演化路径，助力研究者与开发者快速掌握当前主流模型设计理念与实践要点。
+> 交通预测是智慧城市大脑建设的核心环节。近年来，图卷积网络（GCN）因其出色的时空建模能力，成为解决该问题的重要工具。本文系统分析四篇具有代表性的GCN类交通预测模型。
 
 ---
 
@@ -15,7 +13,7 @@
 
 ### 问题抽象
 
-* **路网建模：** 交通网络被建模为图 `G = (V, E, A)`，其中 `V` 表示包含 `N` 个节点（dataset决定）的集合，`A ∈ ℝ^{N×N}` 为邻接矩阵，刻画节点之间的空间连接关系。
+* **路网建模：** 交通网络被建模为图 `G = (V, E, A)`，其中 `V` 表示包含 `N` 个节点（dataset决定）的集合，`A ∈ ℝ^{N×N}` 为邻接矩阵，刻画节点之间的空间关系；
 * **输入张量：** 历史观测数据构成张量 `X ∈ ℝ^{B × T_in × N × C}`，其中 `B` 为批大小，`T_in` 为时间步数，`C` 为特征数（如速度、流量等）。
 * **预测目标：** 输出为未来 `T_out` 个时间步的交通状态 `\hat{Y} ∈ ℝ^{B × T_out × N × C'}`。
 
@@ -23,7 +21,7 @@
 
 主流模型多采用谱图卷积的一阶近似，其传播公式为：
 
-![图卷积公式](https://latex.codecogs.com/png.image?\dpi{120}H^{\(l+1\)}%20=%20\sigma\left\(\hat{D}^{-1/2}%20\hat{A}%20\hat{D}^{-1/2}%20H^{\(l\)}%20W^{\(l\)}\right\))
+![图卷积公式](https://latex.codecogs.com/png.image?\dpi{120}H^{(l+1)}%20=%20\sigma\left\(\hat{D}^{-1/2}%20\hat{A}%20\hat{D}^{-1/2}%20H^{(l)}%20W^{(l)}\right\))
 
 其中 `\hat{A} = A + I` 为添加自环后的邻接矩阵，`\hat{D}` 为其度矩阵，`W^{(l)}` 是第 `l` 层的可学习权重。
 
@@ -36,7 +34,7 @@
 **结构设计：**
 
 * **ST-Conv Block：** 采用“时间卷积 → 图卷积 → 时间卷积”的三明治结构；
-* **时间卷积：** 使用带 GLU 门控机制的一维因果卷积捕捉时间依赖；
+* **时间卷积：** 使用带 GLU 门控机制的一维因���卷积捕捉时间依赖；
 * **空间卷积：** 使用标准 GCN 模块在两个时间卷积之间建模空间依赖。
 
 ![STGCN结构](https://latex.codecogs.com/png.image?\dpi{120}v^{l+1}%20=%20\Gamma_1%20*_{\mathcal{T}}%20\mathrm{ReLU}\left\(\Theta%20*_{\mathcal{G}}%20\left\(\Gamma_0%20*_{\mathcal{T}}%20v^l\right\)\right\))
@@ -59,68 +57,8 @@
 🔹 空间注意力机制详解
 公式 (1)：计算原始注意力得分矩阵
 
-𝑆
-=
-𝑉
-𝑠
-⋅
-𝜎
-(
-(
-𝑋
-ℎ
-(
-𝑟
-−
-1
-)
-𝑊
-1
-)
-𝑊
-2
-(
-𝑊
-3
-𝑋
-ℎ
-(
-𝑟
-−
-1
-)
-)
-𝑇
-+
-𝑏
-𝑠
-)
-S=V 
-s
-​
- ⋅σ((X 
-h
-(r−1)
-​
- W 
-1
-​
- )W 
-2
-​
- (W 
-3
-​
- X 
-h
-(r−1)
-​
- ) 
-T
- +b 
-s
-​
- )
+![空间注意力公式](https://latex.codecogs.com/png.image?\dpi{150}S=V_s\cdot\sigma\Big((X_h^{(r-1)}W_1)W_2(W_3X_h^{(r-1)})^T+b_s\Big))
+
 X_h^{(r-1)} 是第 r 层输入的交通状态特征；
 
 W_1, W_2, W_3, V_s, b_s 均为可学习参数；
@@ -129,49 +67,8 @@ W_1, W_2, W_3, V_s, b_s 均为可学习参数；
 
 公式 (2)：Softmax 归一化注意力权重
 
-𝑆
-𝑖
-𝑗
-′
-=
-exp
-⁡
-(
-𝑆
-𝑖
-𝑗
-)
-∑
-𝑗
-=
-1
-𝑁
-exp
-⁡
-(
-𝑆
-𝑖
-𝑗
-)
-S 
-ij
-′
-​
- = 
-∑ 
-j=1
-N
-​
- exp(S 
-ij
-​
- )
-exp(S 
-ij
-​
- )
-​
- 
+![空间注意力Softmax](https://latex.codecogs.com/png.image?\dpi{150}S'_{ij}=%5Cfrac%7B%5Cexp%28S_{ij}%29%7D%7B%5Csum%5C_{j=1}^{N}%5Cexp%28S_{ij}%29%7D)
+
 每一行归一化为概率分布，表示每个节点从邻居聚合信息时应给予的权重；
 
 一句话理解： 通过一个动态注意力机制，ASTGCN 能够赋予不同邻居不同的重要性，而不是像 STGCN 那样用固定的邻接矩阵进行聚合
@@ -191,44 +88,8 @@ T_h, T_d, T_w: 分别为近期、日周期、周周期片段的历史窗口长�
 
 截取方式：
 
-𝑋
-ℎ
-=
-(
-𝑋
-𝑡
-0
-−
-𝑇
-ℎ
-+
-1
-,
-…
-,
-𝑋
-𝑡
-0
-)
-X 
-h
-​
- =(X 
-t 
-0
-​
- −T 
-h
-​
- +1
-​
- ,…,X 
-t 
-0
-​
- 
-​
- )
+X_h = (X_{t0-Th+1}, ..., X_{t0})
+
 动机： 捕捉交通流的短时惯性和局部突变趋势。
 
 2. 日周期片段 X_d（The Daily-Periodic Segment）
@@ -245,10 +106,10 @@ t
 
 动机： 捕捉跨周的宏观周期模式（如周末效应等）。
 
-最终，这三类片段分别送入三个结构相同的子模型中处理（均带时空注意力模块），并在输出层通过加权融合得到最终预测结果。这种片段设计很好地融合了短期惯性+日周期+周周期信息，体现了领域知识引导下的数据建模策略。
+最终，这三类片段分别送入三个结构相同的子模型中处理（均带时空注意力模块），并在输出层通过加权融合得到最终预测结果。这种片段设计很好地捕捉了交通流的多尺度时空模式。
 * **输出融合：**
 
-![输出融合](https://latex.codecogs.com/png.image?\dpi{120}\hat{Y}%20=%20W_h%20\odot%20\hat{Y}_h%20+%20W_d%20\odot%20\hat{Y}_d%20+%20W_w%20\odot%20\hat{Y}_w)
+![输出融合](https://latex.codecogs.com/png.image?\dpi{150}\hat{Y}=W_h\odot\hat{Y}_h+W_d\odot\hat{Y}_d+W_w\odot\hat{Y}_w)
 
 **优劣分析：**
 
@@ -267,11 +128,11 @@ t
 * **动态属性** `D^{t-m,t}` ：如天气、节假日等；
 * **拼接方式：**
 
-![属性拼接](https://latex.codecogs.com/png.image?\dpi{120}E^t%20=%20\left\[X^t,%20S,%20D_1^{t-m,t},%20D_2^{t-m,t},%20\dots\right])
+![属性拼接](https://latex.codecogs.com/png.image?\dpi{120}E^t%20=%20\left[X^t,%20S,%20D_1^{t-m,t},%20D_2^{t-m,t},%20\dots\right])
 
 * **后端建模：** GCN + GRU：
 
-![后端建模](https://latex.codecogs.com/png.image?\dpi{120}h_t%20=%20\mathrm{GRU}\left\(\mathrm{GCN}\left\(E^t\right\),%20h_{t-1}\right\))
+![后端建模](https://latex.codecogs.com/png.image?\dpi{120}h_t%20=%20\mathrm{GRU}\left\(\mathrm{GCN}\left(E^t\right),%20h_{t-1}\right\))
 
 **优劣分析：**
 
@@ -322,7 +183,7 @@ STDF 结构如同一个“双流模型”，分别处理：
 
 通过逐元素融合操作整合两路特征：
 
-![融合层](https://latex.codecogs.com/png.image?\dpi{120}FM_{fused}%20=%20\mathrm{ReLU}\left\(FM_g%20+%20\mathrm{Transformer}\left\(FM_{st}\right\)\right\))
+![融合层](https://latex.codecogs.com/png.image?\dpi{120}FM_{fused}%20=%20\mathrm{ReLU}\left(FM_g%20+%20\mathrm{Transformer}\left(FM_{st}\right)\right))
 
 融合后的特征保留了主干的时空建模能力，同时具备外部感知能力。
 
@@ -330,7 +191,7 @@ STDF 结构如同一个“双流模型”，分别处理：
 
 将融合特征输入线性层，预测未来 `Q` 个时间步的交通状态：
 
-![输出层](https://latex.codecogs.com/png.image?\dpi{120}\hat{Y}%20=%20f\left\(FM_{fused}\right\)%20\in%20\mathbb{R}^{B%20\times%20C'%20\times%20N%20\times%20Q})
+![输出层](https://latex.codecogs.com/png.image?\dpi{120}\hat{Y}%20=%20f\left(FM_{fused}\right)%20\in%20\mathbb{R}^{B%20\times%20C'%20\times%20N%20\times%20Q})
 
 ---
 
@@ -356,7 +217,7 @@ STDF 中引入了 **全局参数共享策略**，其核心为：
 
 ---
 
-STDF 就像一个字典，不仅能“看历史录像”（交通主干流），还能“看天气预报和日历”（外部辅助流），最终在大脑中融合这两类信息，输出更准确的预测结果。
+STDF 就像一个字典，不仅能“看历史录像”（交通主干流），还能“看天气预报和日历”（外部辅助流），最终在大脑中融合这两类信息，输出更准确的交通预测结果。
 
 ## 6. 总结与展望：从静态建模到动态融合
 
@@ -374,4 +235,3 @@ STDF 就像一个字典，不仅能“看历史录像”（交通主干流），
 * 从简单拼接 → 结构化编码与深度融合。
 
 ---
-

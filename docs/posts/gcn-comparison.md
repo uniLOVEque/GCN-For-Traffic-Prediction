@@ -37,7 +37,7 @@
 **结构设计：**
 
 * **ST-Conv Block：** 采用“时间卷积 → 图卷积 → 时间卷积”的三明治结构；
-* **时间卷积：** 使用带 GLU 门控机制的一维因���卷积捕捉时间依赖；
+* **时间卷积：** 使用带 GLU 门控机制的一维因卷积捕捉时间依赖；
 * **空间卷积：** 使用标准 GCN 模块在两个时间卷积之间建模空间依赖。
 
 ![STGCN结构](https://latex.codecogs.com/png.image?\dpi{120}v^{l+1}%20=%20\Gamma_1%20*_{\mathcal{T}}%20\mathrm{ReLU}\left\(\Theta%20*_{\mathcal{G}}%20\left\(\Gamma_0%20*_{\mathcal{T}}%20v^l\right\)\right\))
